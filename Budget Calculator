@@ -1,0 +1,131 @@
+import java.awt.*;
+import java.awt.event.*;
+import java.util.ArrayList;
+
+class BudgetCalculatorGUI extends Frame {
+    private double totalIncome = 0;
+    private double totalExpenses = 0;
+    private ArrayList<String> transactionHistory = new ArrayList<>();
+    
+    private Label lblIncome, lblExpense, lblCategory, lblOverview;
+    private TextField txtIncome, txtExpense, txtCategory;
+    private TextArea txtOverview, txtHistory;
+    private Button btnAddIncome, btnAddExpense, btnViewOverview, btnViewHistory, btnExit;
+
+    public BudgetCalculatorGUI() {
+        // Set up the frame
+        setTitle("Budget Calculator");
+        setSize(400, 600);
+        setLayout(new FlowLayout());
+        setResizable(false);
+
+        // Labels
+        lblIncome = new Label("Income Amount ($): ");
+        lblExpense = new Label("Expense Amount ($): ");
+        lblCategory = new Label("Expense Category: ");
+        lblOverview = new Label("Real-Time Budget Overview");
+
+        // Text Fields
+        txtIncome = new TextField(20);
+        txtExpense = new TextField(20);
+        txtCategory = new TextField(20);
+
+        // Text Areas
+        txtOverview = new TextArea(5, 35);
+        txtOverview.setEditable(false);
+        txtHistory = new TextArea(10, 35);
+        txtHistory.setEditable(false);
+
+        // Buttons
+        btnAddIncome = new Button("Add Income");
+        btnAddExpense = new Button("Add Expense");
+        btnViewOverview = new Button("View Overview");
+        btnViewHistory = new Button("View Transaction History");
+        btnExit = new Button("Exit");
+
+        // Add components to the frame
+        add(lblIncome);
+        add(txtIncome);
+        add(btnAddIncome);
+
+        add(lblExpense);
+        add(txtExpense);
+        add(lblCategory);
+        add(txtCategory);
+        add(btnAddExpense);
+
+        add(lblOverview);
+        add(txtOverview);
+        add(btnViewOverview);
+
+        add(txtHistory);
+        add(btnViewHistory);
+
+        add(btnExit);
+
+        // Button Event Handlers
+        btnAddIncome.addActionListener(e -> addIncome());
+        btnAddExpense.addActionListener(e -> addExpense());
+        btnViewOverview.addActionListener(e -> viewOverview());
+        btnViewHistory.addActionListener(e -> viewTransactionHistory());
+        btnExit.addActionListener(e -> System.exit(0));
+
+        // Window Closing Event
+        addWindowListener(new WindowAdapter() {
+            public void windowClosing(WindowEvent e) {
+                System.exit(0);
+            }
+        });
+    }
+
+    private void addIncome() {
+        try {
+            double incomeAmount = Double.parseDouble(txtIncome.getText());
+            totalIncome += incomeAmount;
+            transactionHistory.add("Income - General Income: $" + incomeAmount);
+            txtIncome.setText("");
+            txtOverview.setText("Income added successfully!");
+        } catch (NumberFormatException ex) {
+            txtOverview.setText("Invalid income amount. Please try again.");
+        }
+    }
+
+    private void addExpense() {
+        try {
+            double expenseAmount = Double.parseDouble(txtExpense.getText());
+            String category = txtCategory.getText();
+            if (category.isEmpty()) {
+                txtOverview.setText("Category cannot be empty.");
+                return;
+            }
+            totalExpenses += expenseAmount;
+            transactionHistory.add("Expense - " + category + ": $" + expenseAmount);
+            txtExpense.setText("");
+            txtCategory.setText("");
+            txtOverview.setText("Expense added successfully!");
+        } catch (NumberFormatException ex) {
+            txtOverview.setText("Invalid expense amount. Please try again.");
+        }
+    }
+
+    private void viewOverview() {
+        double remainingBalance = totalIncome - totalExpenses;
+        txtOverview.setText("--- Real-Time Budget Overview ---\n" +
+                "Total Income: $" + totalIncome + "\n" +
+                "Total Expenses: $" + totalExpenses + "\n" +
+                "Remaining Balance: $" + remainingBalance);
+    }
+
+    private void viewTransactionHistory() {
+        StringBuilder history = new StringBuilder("--- Transaction History ---\n");
+        for (String transaction : transactionHistory) {
+            history.append(transaction).append("\n");
+        }
+        txtHistory.setText(history.toString());
+    }
+
+    public static void main(String[] args) {
+        BudgetCalculatorGUI app = new BudgetCalculatorGUI();
+        app.setVisible(true);
+    }
+}
